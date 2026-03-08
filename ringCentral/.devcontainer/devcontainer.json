@@ -4,13 +4,16 @@
     "customizations": {
       "vscode": {
         "settings": {
-          "terminal.integrated.shell.linux": "/bin/bash"
+          "terminal.integrated.defaultProfile.linux": "bash",
+          "terminal.integrated.profiles.linux": {
+            "bash": { "path": "/bin/bash" }
+          }
         },
         "extensions": [
           "rust-lang.rust-analyzer",
           "ms-vscode.cpptools",
           "serayuzgur.crates",
-          "bungcip.better-toml",
+          "tamasfe.even-better-toml",
           "dbaeumer.vscode-eslint",                
           "esbenp.prettier-vscode",                
           "ms-vscode.vscode-node-azure-pack",      

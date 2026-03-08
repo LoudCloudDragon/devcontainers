@@ -9,10 +9,10 @@
                 "terminal.integrated.profiles.linux": {
                     "bash": {
                         "path": "/bin/bash"
-            },
-            "PowerShell": {
-                "path": "/usr/bin/pwsh",
-                "icon": "terminal-powershell"
+                    },
+                    "PowerShell": {
+                        "path": "/usr/bin/pwsh",
+                        "icon": "terminal-powershell"
                     }
                 }
             },
@@ -24,6 +24,7 @@
                 "vscode-icons-team.vscode-icons",
                 "christian-kohler.npm-intellisense",
                 "ms-dotnettools.vscode-dotnet-runtime",
+                "ms-vscode.powershell",
                 "patryk.rust-extension-pack",
                 "richie5um2.vscode-sort-json",
                 "vscode-json-editor.vscode-json-editor"
@@ -31,8 +32,8 @@
         }
     },
     "postCreateCommand": [
-        "pwsh -Command \"Install-PackageProvider -Name NuGet -Force\"",
-        "pwsh -Command \"Install-Module -Name Microsoft.Graph,PnP.PowerShell,ExchangeOnlineManagement,AzureAD,Az.Security,MicrosoftTeams,PowerShellGet -Force -AllowClobber -Scope AllUsers\""
+        "sudo pwsh -Command \"Install-PackageProvider -Name NuGet -Force\"",
+        "sudo pwsh -Command \"Install-Module -Name Microsoft.Graph,PnP.PowerShell,ExchangeOnlineManagement,AzureAD,Az.Security,MicrosoftTeams,PowerShellGet -Force -AllowClobber -Scope AllUsers\""
     ],
     "workspaceFolder": "/usr/src/projectSpace",
     "remoteUser": "vscode",
@@ -40,5 +41,6 @@
         "source=vs-docker_ccc,target=/usr/src/projectSpace,type=volume"
     ],
     "forwardPorts": [3000],
-    "shutdownAction": "stopContainer"
-}    
+    "shutdownAction": "stopContainer",
+    "postStartCommand": "git config --global user.name '${localEnv:GIT_USERNAME}' && git config --global user.email '${localEnv:GIT_EMAIL}'"
+}

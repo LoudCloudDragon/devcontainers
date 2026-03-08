@@ -46,10 +46,6 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 # Add Rust to the PATH environment variable
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Set Git global config with placeholder values
-RUN git config --global user.name "Your Name Here" && \
-    git config --global user.email "you@example.com"
-
 # Set the working directory
 WORKDIR /usr/src/projectSpace
 

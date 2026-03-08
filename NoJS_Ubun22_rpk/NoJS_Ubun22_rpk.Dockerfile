@@ -26,8 +26,7 @@ RUN apt-get update && \
         git \
         ca-certificates \
         gnupg \
-        lsb-release \
-        apt-transport-https && \
+        lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -51,11 +50,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Verify Node.js and npm installation
 RUN node -v && npm -v
 
-# Install Rust using rustup
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-
-# Add Rust to the PATH environment variable
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Install Rust to a system-wide location so all users can access it
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+ENV PATH="/usr/local/cargo/bin:${PATH}"
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
+    chmod -R a+rx /usr/local/rustup /usr/local/cargo
 
 # Add the Windows target for Rust cross-compilation
 RUN rustup target add x86_64-pc-windows-gnu
@@ -65,7 +65,8 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsof
     dpkg -i packages-microsoft-prod.deb && \
     apt-get update && \
     apt-get install -y powershell && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f packages-microsoft-prod.deb
 
 # Pre-configure and install PowerShell modules
 RUN pwsh -Command "Set-PSRepository -Name PSGallery -InstallationPolicy Trusted; \
@@ -80,9 +81,8 @@ RUN pwsh -Command "Set-PSRepository -Name PSGallery -InstallationPolicy Trusted;
     Install-Module -Name PowerShellGet -Force -AllowClobber -Scope AllUsers; \
     Install-Module -Name Az -Force -AllowClobber -Scope AllUsers;"
 
-# Install Azure CLI
+# Install Azure CLI (script handles repo setup and install)
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
-    apt-get install -y azure-cli && \
     rm -rf /var/lib/apt/lists/*
 
 # Create non-privileged user account

@@ -7,10 +7,11 @@ RUN apt-get update && \
     curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Add Git PPA (if needed) and install git
-RUN add-apt-repository ppa:git-core/ppa -y && \
-    apt-get update && \
-    apt-get install -y git
+# Install git
+RUN apt-get update && \
+    apt-get install -y git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Add Rust to PATH
 ENV PATH="/root/.cargo/bin:${PATH}"

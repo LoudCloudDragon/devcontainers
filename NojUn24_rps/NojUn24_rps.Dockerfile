@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install necessary tools and dependencies, including git and gh
 RUN apt-get update && \
     apt-get install -y \
+        sudo \
         curl \
         build-essential \
         python3-minimal \
@@ -40,11 +41,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Verify Node.js and npm installation
 RUN node -v && npm -v
 
-# Install Rust using rustup
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-
-# Add Rust to the PATH environment variable
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Install Rust to a system-wide location so all users can access it
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+ENV PATH="/usr/local/cargo/bin:${PATH}"
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
+    chmod -R a+rx /usr/local/rustup /usr/local/cargo
 
 # Add the Windows target for Rust cross-compilation
 RUN rustup target add x86_64-pc-windows-gnu
@@ -55,16 +57,15 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/24.04/packages-microsof
     apt-get update && \
     apt-get install -y powershell && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f packages-microsoft-prod.deb
 
-# Create non-privileged user account 
+# Create non-privileged user account with sudo access
 RUN useradd -m vscode \
     && mkdir -p /home/vscode/.vscode-server \
     && chown -R vscode:vscode /home/vscode
-
-# Set Git global config with placeholder values
-RUN git config --global user.name "Your Name Here" && \
-    git config --global user.email "you@example.com"
+RUN echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/vscode && \
+    chmod 440 /etc/sudoers.d/vscode
 
 # Set the working directory
 WORKDIR /usr/src/projectSpace
