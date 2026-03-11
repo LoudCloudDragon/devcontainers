@@ -9,6 +9,11 @@ This branch; with its dockerfile & devcontainer.json file can be used to target 
 ## Build the image: Dockerfile
 If you are going to download the dockerfile and mod it, don't forgot to adjust the git email & user name lines (74/75). If you are going to pull the image, same thing, config those entries b/c they having placeholder data.
 
+# Gotchas
+### A list of things that will foobar your container/codespace
+##### Post build (inside the container) Checks:
+- User mismatch: is the session (terminal) user the repo directory Owner?
+
 ## Building a container: devcontainer.json
 You should first set two environment variables for the git configuration commands (in the dev.json)
 
